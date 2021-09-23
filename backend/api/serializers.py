@@ -1,4 +1,5 @@
 from django.db.models import F
+from django.shortcuts import get_object_or_404
 from drf_extra_fields.fields import Base64ImageField
 from rest_framework import serializers
 from rest_framework.validators import UniqueTogetherValidator
@@ -158,16 +159,12 @@ class AddRecipeSerializer(serializers.ModelSerializer):
             return False
         return Cart.objects.filter(owner=cur_user, recipe=obj).exists()
 
-    def create(self, validated_data):
-        tags = validated_data.pop('tags')
-        ingredients = validated_data.pop('ingredients')
-        author = self.context.get('request').user
-        print(ingredients)
-        recipe = Recipe.objects.create(author=author, **validated_data)
-        recipe.tags.set(tags)
+    def create_ingredients(self, recipe, ingredients):
         for ingredient in ingredients:
-            ingr_obj = ingredient['ingredient']
-            # ingr_obj = get_object_or_404(Ingredient, id=ingredient['id'])
+            ingr_obj = get_object_or_404(
+                Ingredient,
+                id=ingredient['ingredient'].id
+            )
             amount = ingredient['amount']
             if RecipeIngredient.objects.filter(
                     recipe=recipe,
@@ -179,6 +176,14 @@ class AddRecipeSerializer(serializers.ModelSerializer):
                 recipe=recipe,
                 ingredient=ingr_obj,
             )
+
+    def create(self, validated_data):
+        tags = validated_data.pop('tags')
+        ingredients = validated_data.pop('ingredients')
+        author = self.context.get('request').user
+        recipe = Recipe.objects.create(author=author, **validated_data)
+        recipe.tags.set(tags)
+        self.create_ingredients(recipe, ingredients)
         return recipe
 
     def update(self, instance, validated_data):
@@ -188,21 +193,7 @@ class AddRecipeSerializer(serializers.ModelSerializer):
         if 'ingredients' in self.initial_data:
             ingredients = validated_data.pop('ingredients')
             instance.ingredients.clear()
-            for ingredient in ingredients:
-                ingr_obj = ingredient['ingredient']
-                # ingr_obj = get_object_or_404(Ingredient, id=ingredient['id'])
-                amount = ingredient['amount']
-                if RecipeIngredient.objects.filter(
-                        recipe=instance,
-                        ingredient=ingr_obj
-                ).exists():
-                    amount += F('amount')
-                RecipeIngredient.objects.update_or_create(
-                    recipe=instance,
-                    ingredient=ingr_obj,
-                    defaults={'amount': amount}
-                )
-
+            self.create_ingredients(instance, ingredients)
         instance.name = validated_data.get(
             'name',
             instance.name
@@ -249,13 +240,13 @@ class FavoriteSerializer(serializers.ModelSerializer):
     class Meta:
         model = Favorite
         fields = ('owner', 'recipe')
-        validators = [
+        validators = (
             UniqueTogetherValidator(
                 queryset=Favorite.objects.all(),
                 fields=('owner', 'recipe'),
                 message='Рецепт уже в находиться в избранном'
-            )
-        ]
+            ),
+        )
 
     def to_representation(self, instance):
         recipes = PreviewRecipeSerializer(
@@ -271,16 +262,15 @@ class CartSerializer(serializers.ModelSerializer):
     class Meta:
         model = Cart
         fields = ('owner', 'recipe')
-        validators = [
+        validators = (
             UniqueTogetherValidator(
                 queryset=Cart.objects.all(),
                 fields=('owner', 'recipe'),
                 message='Рецепт уже в находиться в корзине.'
-            )
-        ]
+            ),
+        )
 
     def to_representation(self, instance):
-        print(instance)
         recipes = PreviewRecipeSerializer(
             instance.recipe,
             context={

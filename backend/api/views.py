@@ -1,5 +1,6 @@
 from django.shortcuts import HttpResponse, get_object_or_404
 from django_filters import rest_framework as django_filters
+from django.db.models import Sum
 from rest_framework import status, viewsets
 from rest_framework.pagination import PageNumberPagination
 from rest_framework.permissions import IsAuthenticated
@@ -40,8 +41,6 @@ class RecipeViewSet(viewsets.ModelViewSet):
     """API рецептов."""
 
     queryset = Recipe.objects.all()
-    serializer_class = RecipeSerializer
-    # authentication_classes = (SessionAuthentication, TokenAuthentication)
     permission_classes = (AdminOrAuthorOrReadOnly,)
     pagination_class = LimitFieldPagination
     filter_backends = (django_filters.DjangoFilterBackend,)
@@ -124,15 +123,16 @@ class CartView(APIView):
     def delete(self, request, recipe_id):
         cur_user = request.user
         recipe = get_object_or_404(Recipe, id=recipe_id)
-        if not Cart.objects.filter(
+        cart_qs = Cart.objects.filter(
                 owner=cur_user,
                 recipe=recipe
-        ).exists():
-            return Response('Рецепта нет в списке покупок.', status=status.HTTP_400_BAD_REQUEST)
-        Cart.objects.filter(
-            owner=cur_user,
-            recipe=recipe
-        ).delete()
+        )
+        if not cart_qs.exists():
+            return Response(
+                'Рецепта нет в списке покупок.',
+                status=status.HTTP_400_BAD_REQUEST
+            )
+        cart_qs.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
 
 
@@ -144,25 +144,24 @@ class DownloadCart(APIView):
         shop_list = {}
         ingredients = RecipeIngredient.objects.filter(
             recipe__shop_recipes__owner=cur_user
-        )
+        ).values(
+            'ingredient__name',
+            'ingredient__measurement_unit'
+        ).annotate(Sum('amount', distinct=True))
         for ingredient in ingredients:
-            amount = ingredient.amount
-            name = ingredient.ingredient.name
-            measurement_unit = ingredient.ingredient.measurement_unit
-            if name not in shop_list:
-                shop_list[name] = {
-                    'amount': amount,
-                    'measurement_unit': measurement_unit
-                }
-            else:
-                shop_list[name][amount] += amount
+            amount = ingredient['amount__sum']
+            name = ingredient['ingredient__name']
+            measurement_unit = ingredient['ingredient__measurement_unit']
+            shop_list[name] = {
+                'amount': amount,
+                'measurement_unit': measurement_unit
+            }
         out_list = ['Foodgram\n\n']
         for ingr, value in shop_list.items():
             out_list.append(
                 f" {ingr} - {value['amount']} "
                 f"{value['measurement_unit']}\n"
             )
-        # print(out_list)
         response = HttpResponse(out_list, {
             'Content-Type': 'text/plain',
             'Content-Disposition': 'attachment; filename="out_list.txt"',

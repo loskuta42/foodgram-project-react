@@ -65,12 +65,9 @@ class UserWithRecipesSerializer(UserSerializer):
 
     def get_recipes(self, obj):
         from api.serializers import PreviewRecipeSerializer
-        limit = 3
-        try:
-            limit = self.context['request'].query_params['recipes_limit']
-        except Exception:
-            pass
-
+        limit = self.context['request'].query_params['recipes_limit']
+        # без конвертации в int не срабатывает, потому что приходит
+        # тип str (не понимаю почему так), поэтому оставил
         qs = obj.recipes.all()[:int(limit)]
         serializer = PreviewRecipeSerializer(
             instance=qs,
@@ -90,13 +87,13 @@ class SubscriptionSerializer(serializers.ModelSerializer):
     class Meta:
         model = Subscribe
         fields = ('user', 'author')
-        validators = [
+        validators = (
             UniqueTogetherValidator(
                 queryset=Subscribe.objects.all(),
                 fields=('user', 'author'),
                 message='Данный автор уже находиться в избранном.'
-            )
-        ]
+            ),
+        )
 
     def validate(self, data):
         user = self.context['request'].user
