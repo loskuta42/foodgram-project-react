@@ -66,8 +66,6 @@ class UserWithRecipesSerializer(UserSerializer):
     def get_recipes(self, obj):
         from api.serializers import PreviewRecipeSerializer
         limit = self.context['request'].query_params['recipes_limit']
-        # без конвертации в int не срабатывает, потому что приходит
-        # тип str (не понимаю почему так), поэтому оставил
         qs = obj.recipes.all()[:int(limit)]
         serializer = PreviewRecipeSerializer(
             instance=qs,

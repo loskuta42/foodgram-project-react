@@ -87,18 +87,16 @@ class FavoriteView(APIView):
     def delete(self, request, recipe_id):
         cur_user = request.user
         recipe = get_object_or_404(Recipe, id=recipe_id)
-        if not Favorite.objects.filter(
+        favorite = Favorite.objects.filter(
                 owner=cur_user,
                 recipe=recipe
-        ).exists():
+        )
+        if not favorite.exists():
             return Response(
                 'Этот рецепт отсутсвует в избранном.',
                 status=status.HTTP_400_BAD_REQUEST
             )
-        Favorite.objects.filter(
-            owner=cur_user,
-            recipe=recipe
-        ).delete()
+        favorite.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
 
 

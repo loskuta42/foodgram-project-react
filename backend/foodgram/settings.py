@@ -31,6 +31,8 @@ DEBUG = os.environ.get('DEBUG_VALUE') == 'TRUE'
 ALLOWED_HOSTS = [
     '*',
     'backend',
+    '62.84.123.128',
+    'bestfoodgram.co.vu'
 ]
 
 
@@ -146,7 +148,6 @@ REST_FRAMEWORK = {
         'rest_framework.permissions.AllowAny',
     ],
     'DEFAULT_AUTHENTICATION_CLASSES': [
-        'rest_framework.authentication.SessionAuthentication',
         'rest_framework.authentication.TokenAuthentication',
     ],
     'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.PageNumberPagination',
