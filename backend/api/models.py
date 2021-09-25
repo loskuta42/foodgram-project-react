@@ -35,8 +35,8 @@ class Tag(models.Model):
         max_length=254,
         unique=True,
         blank=False,
-        verbose_name='Название тэга',
-        help_text=('Введите название тэга, '
+        verbose_name='Название тега',
+        help_text=('Введите название тега, '
                    'не более 254 символов')
     )
     color = models.CharField(
@@ -45,7 +45,7 @@ class Tag(models.Model):
         unique=True,
         blank=False,
         verbose_name='Цвет тега',
-        help_text=('Введите цвет тэга в формате HEX, '
+        help_text=('Введите цвет тега в формате HEX, '
                    'пример: #123adf')
     )
     slug = models.SlugField(
@@ -53,7 +53,7 @@ class Tag(models.Model):
         unique=True,
         blank=False,
         verbose_name='Slug тега',
-        help_text=('Введите slug тэга, '
+        help_text=('Введите slug тега, '
                    'не более 254 символов')
     )
 

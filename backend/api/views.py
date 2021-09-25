@@ -145,7 +145,7 @@ class DownloadCart(APIView):
         ).values(
             'ingredient__name',
             'ingredient__measurement_unit'
-        ).annotate(Sum('amount', distinct=True))
+        ).annotate(Sum('amount'))
         for ingredient in ingredients:
             amount = ingredient['amount__sum']
             name = ingredient['ingredient__name']
