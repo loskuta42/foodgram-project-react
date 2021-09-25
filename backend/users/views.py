@@ -8,7 +8,6 @@ from rest_framework.views import APIView
 
 from .models import Subscribe
 from .serializers import SubscriptionSerializer, UserWithRecipesSerializer
-
 from api.views import LimitFieldPagination
 
 User = get_user_model()
