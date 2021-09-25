@@ -88,8 +88,8 @@ class FavoriteView(APIView):
         cur_user = request.user
         recipe = get_object_or_404(Recipe, id=recipe_id)
         favorite = Favorite.objects.filter(
-                owner=cur_user,
-                recipe=recipe
+            owner=cur_user,
+            recipe=recipe
         )
         if not favorite.exists():
             return Response(
@@ -122,8 +122,8 @@ class CartView(APIView):
         cur_user = request.user
         recipe = get_object_or_404(Recipe, id=recipe_id)
         cart_qs = Cart.objects.filter(
-                owner=cur_user,
-                recipe=recipe
+            owner=cur_user,
+            recipe=recipe
         )
         if not cart_qs.exists():
             return Response(
