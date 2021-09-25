@@ -49,7 +49,7 @@ class RecipeAdmin(admin.ModelAdmin):
         'tags',
     )
     search_fields = ('name',)
-    list_filter = ('name','author', 'tags')
+    list_filter = ('name', 'author', 'tags')
     empty_value_display = '-пусто-'
 
     def is_favorited(self, obj):

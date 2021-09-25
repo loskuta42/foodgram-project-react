@@ -1,6 +1,6 @@
+from django.db.models import Sum
 from django.shortcuts import HttpResponse, get_object_or_404
 from django_filters import rest_framework as django_filters
-from django.db.models import Sum
 from rest_framework import status, viewsets
 from rest_framework.pagination import PageNumberPagination
 from rest_framework.permissions import IsAuthenticated

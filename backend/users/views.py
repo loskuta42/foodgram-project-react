@@ -1,9 +1,8 @@
 from django.contrib.auth import get_user_model
 from django.shortcuts import get_object_or_404
-from rest_framework import status, viewsets
+from rest_framework import status
 from rest_framework.generics import ListAPIView
-from rest_framework.permissions import (IsAuthenticated,
-                                        IsAuthenticatedOrReadOnly)
+from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
@@ -11,7 +10,6 @@ from api.views import LimitFieldPagination
 
 from .models import Subscribe
 from .serializers import SubscriptionSerializer, UserWithRecipesSerializer
-
 
 User = get_user_model()
 
@@ -74,4 +72,3 @@ class SubscriptionsView(ListAPIView):
         return User.objects.filter(
             subscribing__user=cur_user
         )
-
