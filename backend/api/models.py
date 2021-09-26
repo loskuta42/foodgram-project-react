@@ -107,8 +107,8 @@ class Recipe(models.Model):
     tags = models.ManyToManyField(
         Tag,
         related_name='tags',
-        verbose_name='Тэги',
-        help_text=('Выберите тэги, которым будет '
+        verbose_name='Теги',
+        help_text=('Выберите теги, которым будет '
                    'соответствовать рецепт')
     )
     ingredients = models.ManyToManyField(

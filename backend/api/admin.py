@@ -32,6 +32,10 @@ class IngredientAdmin(admin.ModelAdmin):
     empty_value_display = '-пусто-'
 
 
+class IngredientsInline(admin.TabularInline):
+    model = Recipe.ingredients.through
+
+
 @admin.register(Recipe)
 class RecipeAdmin(admin.ModelAdmin):
     """Страница рецептов в админке."""
@@ -45,21 +49,28 @@ class RecipeAdmin(admin.ModelAdmin):
         'cooking_time',
         'pub_date',
         'is_favorited',
-        'ingredients',
-        'tags',
+        'get_ingredients',
+        'get_tags',
+    )
+    inlines = (
+        IngredientsInline,
     )
     search_fields = ('name',)
     list_filter = ('name', 'author', 'tags')
     empty_value_display = '-пусто-'
 
     def is_favorited(self, obj):
-        return obj.favorites.count()
+        return obj.fav_recipes.count()
 
-    def ingredients(self, obj):
-        return list(obj.ingredients.all())
+    def get_ingredients(self, obj):
+        return "\n".join([ing.name for ing in obj.ingredients.all()])
 
-    def tags(self, obj):
-        return list(obj.tags.all())
+    get_ingredients.short_description = 'Ингредиенты'
+
+    def get_tags(self, obj):
+        return "\n".join([tag.name for tag in obj.tags.all()])
+
+    get_tags.short_description = 'Теги'
 
 
 @admin.register(RecipeIngredient)

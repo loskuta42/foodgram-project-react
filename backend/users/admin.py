@@ -6,7 +6,33 @@ from .models import CustomUser, Subscribe
 
 @admin.register(CustomUser)
 class UserAdmin(BaseUserAdmin):
-    list_display = ('pk', 'username', 'email', 'first_name', 'last_name')
+    list_display = (
+        'pk',
+        'username',
+        'email',
+        'first_name',
+        'last_name',
+        'role'
+    )
+    fieldsets = (
+        ('Основные поля', {'fields': (
+            'username',
+            'email',
+            'first_name',
+            'last_name'
+        )}),
+        ('Дополнительные поля', {'fields': (
+            'role',
+            'password',
+        )}),
+        ('Права доступа', {
+            'fields': (
+                'is_active',
+                'is_superuser',
+                'user_permissions'
+            ),
+        }),
+    )
     list_filter = ('email', 'username')
     search_fields = ('username',)
     empty_value_display = '-пусто-'

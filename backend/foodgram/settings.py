@@ -31,7 +31,7 @@ DEBUG = os.environ.get('DEBUG_VALUE') == 'TRUE'
 ALLOWED_HOSTS = [
     '*',
     'backend',
-    '62.84.123.128',
+    '62.84.123.88',
     'bestfoodgram.co.vu'
 ]
 
