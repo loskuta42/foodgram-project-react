@@ -41,6 +41,6 @@ class UserAdmin(BaseUserAdmin):
 @admin.register(Subscribe)
 class SubscribeAdmin(admin.ModelAdmin):
     list_display = ('pk', 'user', 'author')
-    list_filter = ('user',)
-    search_fields = ('user',)
+    list_filter = ('author',)
+    search_fields = ('user__email', 'author__email',)
     empty_value_display = '-пусто-'

@@ -24,9 +24,9 @@ class CustomUserSerializer(UserSerializer):
     class Meta(UserSerializer.Meta):
         model = User
         fields = (
+            'email',
             'id',
             'username',
-            'email',
             'last_name',
             'first_name',
             'is_subscribed'
@@ -65,8 +65,11 @@ class UserWithRecipesSerializer(UserSerializer):
 
     def get_recipes(self, obj):
         from api.serializers import PreviewRecipeSerializer
-        limit = self.context['request'].query_params['recipes_limit']
-        qs = obj.recipes.all()[:int(limit)]
+        try:
+            limit = self.context['request'].query_params['recipes_limit']
+            qs = obj.recipes.all()[:int(limit)]
+        except Exception:
+            qs = obj.recipes.all()
         serializer = PreviewRecipeSerializer(
             instance=qs,
             many=True,

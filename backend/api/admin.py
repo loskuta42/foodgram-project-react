@@ -28,12 +28,13 @@ class IngredientAdmin(admin.ModelAdmin):
         'measurement_unit'
     )
     search_fields = ('name',)
-    list_filter = ('name',)
+    list_filter = ('measurement_unit',)
     empty_value_display = '-пусто-'
 
 
 class IngredientsInline(admin.TabularInline):
     model = Recipe.ingredients.through
+    min_num = 1
 
 
 @admin.register(Recipe)
@@ -55,8 +56,8 @@ class RecipeAdmin(admin.ModelAdmin):
     inlines = (
         IngredientsInline,
     )
-    search_fields = ('name',)
-    list_filter = ('name', 'author', 'tags')
+    search_fields = ('name', 'author__email', 'author__username')
+    list_filter = ('author', 'tags')
     empty_value_display = '-пусто-'
 
     def is_favorited(self, obj):
@@ -83,8 +84,11 @@ class RecipeIngredientAdmin(admin.ModelAdmin):
         'ingredient',
         'amount'
     )
-    search_fields = ('recipe',)
-    list_filter = ('recipe',)
+    search_fields = ('recipe__name', 'ingredient__name')
+    list_filter = (
+        'recipe',
+        'ingredient__measurement_unit'
+    )
     empty_value_display = '-пусто-'
 
 
@@ -97,8 +101,11 @@ class FavoriteAdmin(admin.ModelAdmin):
         'owner',
         'recipe'
     )
-    search_fields = ('owner', 'recipe')
-    list_filter = ('owner', 'recipe')
+    search_fields = (
+        'owner__email',
+        'recipe__name',
+    )
+    list_filter = ('recipe', 'recipe__tags')
     empty_value_display = '-пусто-'
 
 
@@ -111,6 +118,6 @@ class CartAdmin(admin.ModelAdmin):
         'owner',
         'recipe'
     )
-    search_fields = ('owner', 'recipe')
-    list_filter = ('owner', 'recipe')
+    search_fields = ('owner__email', 'recipe__name')
+    list_filter = ('owner', 'recipe', 'recipe__tags')
     empty_value_display = '-пусто-'
