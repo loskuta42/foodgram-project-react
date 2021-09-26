@@ -105,7 +105,7 @@ class FavoriteAdmin(admin.ModelAdmin):
         'owner__email',
         'recipe__name',
     )
-    list_filter = ('recipe', 'recipe__tags')
+    list_filter = ('recipe__tags',)
     empty_value_display = '-пусто-'
 
 
@@ -119,5 +119,5 @@ class CartAdmin(admin.ModelAdmin):
         'recipe'
     )
     search_fields = ('owner__email', 'recipe__name')
-    list_filter = ('owner', 'recipe', 'recipe__tags')
+    list_filter = ('recipe__tags',)
     empty_value_display = '-пусто-'
