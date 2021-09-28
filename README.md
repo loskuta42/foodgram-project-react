@@ -27,9 +27,9 @@
 docker-compose up -d --build
 
 И затем следущие команды:
-- ```docker-compose exec web python manage.py makemigrations users --noinput```
-- ```docker-compose exec web python manage.py makemigrations api --noinput```
-- ```docker-compose exec web python manage.py migrate --noinput```
-- ```docker-compose exec web python manage.py createsuperuser```
-- ```docker-compose exec web python manage.py collectstatic --no-input```
+- ```docker-compose exec backend python manage.py makemigrations users --noinput```
+- ```docker-compose exec backend python manage.py makemigrations api --noinput```
+- ```docker-compose exec backend python manage.py migrate --noinput```
+- ```docker-compose exec backend python manage.py createsuperuser```
+- ```docker-compose exec backend python manage.py collectstatic --no-input```
 
