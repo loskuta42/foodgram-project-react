@@ -26,7 +26,7 @@
 - ```DEBUG_VALUE = False```
 
 Далее находясь в корневой папке проекта в терминале прописать(должен быть установлен Docker):
-docker-compose up -d --build
+```docker-compose up -d --build```
 
 И затем следущие команды:
 - ```docker-compose exec backend python manage.py makemigrations users --noinput```
